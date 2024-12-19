@@ -21,5 +21,6 @@ export default {
   min-height: 100vh;
   background-color: #f5f5f5;
   min-width: 500px;
+  color: #181818;
 }
 </style>

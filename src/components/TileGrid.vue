@@ -8,30 +8,50 @@
         <button @click="() => handleDifficultyClick(6)">Hard</button>
       </div>
 
-      <div class="canvas-grid" :style="{ width: gridWidth + 'px' }">
+      <div
+        class="canvas-grid"
+        :key="gameNumber"
+        :style="{ width: gridWidth + 'px' }"
+      >
         <Tile
           v-for="(tile, index) in tileArray"
           :key="index"
           :row="Math.floor(index / size) + 1"
           :col="(index % size) + 1"
           :tileSize="tileSize"
+          :type="String(this.types[index])"
           @tile-clicked="handleTileClick"
         />
       </div>
+
+      <div>Game number: {{ this.gameNumber }}</div>
     </div>
   </div>
 </template>
 
 <script>
+const tileTypes = Array.from({ length: 18 }, (_, index) => index + 1);
+const getNDuplicatedElements = (n) => {
+  const types = tileTypes.slice(0, n);
+
+  const duplicatedTypes = types.reduce(
+    (acc, element) => acc.concat([element, element]),
+    []
+  );
+
+  return duplicatedTypes.sort(() => 0.5 - Math.random());
+};
+
 import Tile from "./Tile.vue";
 
 export default {
   components: { Tile },
   data() {
     return {
-      size: 5,
+      size: 4,
       tileSize: 60,
-      lastFlippedType: null,
+      gameNumber: 1,
+      types: getNDuplicatedElements(8),
     };
   },
   computed: {
@@ -44,13 +64,14 @@ export default {
   },
   methods: {
     handleTileClick(tile) {
-      //check if game finished
       alert(
         `Tile clicked: Row ${tile.row}, Column ${tile.col}, flipped ${tile.flipped}, guessed ${tile.guessed}`
       );
     },
     handleDifficultyClick(size) {
       this.size = size;
+      this.types = getNDuplicatedElements((size * size) / 2);
+      this.gameNumber++;
     },
   },
 };

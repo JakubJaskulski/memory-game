@@ -21,7 +21,6 @@ export default {
     return {
       flipped: false,
       guessed: false,
-      type: Math.random() < 0.5 ? 1 : 2,
     };
   },
   props: {
@@ -36,6 +35,10 @@ export default {
     tileSize: {
       type: Number,
       default: 60,
+    },
+    type: {
+      type: String,
+      required: true,
     },
   },
   mounted() {
@@ -60,7 +63,7 @@ export default {
       ctx.strokeRect(0, 0, this.tileSize, this.tileSize);
 
       // Draw tile text
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = "#0f1010";
       ctx.font = "16px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
