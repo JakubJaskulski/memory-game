@@ -86,6 +86,14 @@ export default {
         this.guessed = true;
         this.drawTile();
         setLastFlippedTile(null);
+
+        this.$emit("tile-guessed", {
+          row: this.row,
+          col: this.col,
+          flipped: this.flipped,
+          guessed: this.guessed,
+        });
+
         return;
       }
 

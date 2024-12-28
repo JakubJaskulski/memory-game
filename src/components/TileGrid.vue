@@ -20,11 +20,13 @@
           :col="(index % size) + 1"
           :tileSize="tileSize"
           :type="String(this.types[index])"
-          @tile-clicked="handleTileClick"
+          @tile-guessed="handleTileGuessed"
         />
       </div>
 
       <div>Game number: {{ this.gameNumber }}</div>
+      <div>---debug---</div>
+      <div>Game size: {{ this.size }}</div>
     </div>
   </div>
 </template>
@@ -52,6 +54,7 @@ export default {
       tileSize: 60,
       gameNumber: 1,
       types: getNDuplicatedElements(8),
+      guessedCount: 0,
     };
   },
   computed: {
@@ -63,12 +66,15 @@ export default {
     },
   },
   methods: {
-    handleTileClick(tile) {
-      alert(
-        `Tile clicked: Row ${tile.row}, Column ${tile.col}, flipped ${tile.flipped}, guessed ${tile.guessed}`
-      );
+    handleTileGuessed() {
+      this.guessedCount += 2;
+      if (this.guessedCount === this.size * this.size) {
+        alert(`You won!`);
+        this.handleDifficultyClick(this.size);
+      }
     },
     handleDifficultyClick(size) {
+      this.guessedCount = 0;
       this.size = size;
       this.types = getNDuplicatedElements((size * size) / 2);
       this.gameNumber++;
