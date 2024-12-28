@@ -8,6 +8,13 @@
         <button @click="() => handleDifficultyClick(6)">Hard</button>
       </div>
 
+      <div>
+        <span>{{ stopwatch.days }}</span
+        >:<span>{{ stopwatch.hours }}</span
+        >:<span>{{ stopwatch.minutes }}</span
+        >:<span>{{ stopwatch.seconds }}</span>
+      </div>
+
       <div
         class="canvas-grid"
         :key="gameNumber"
@@ -21,17 +28,20 @@
           :tileSize="tileSize"
           :type="String(this.types[index])"
           @tile-guessed="handleTileGuessed"
+          @tile-clicked="handleTileClicked"
         />
       </div>
-
-      <div>Game number: {{ this.gameNumber }}</div>
+      <div>Clicks: {{ this.clickCount }}</div>
       <div>---debug---</div>
+      <div>Game number: {{ this.gameNumber }}</div>
       <div>Game size: {{ this.size }}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { useStopwatch } from "vue-timer-hook";
+
 const tileTypes = Array.from({ length: 18 }, (_, index) => index + 1);
 const getNDuplicatedElements = (n) => {
   const types = tileTypes.slice(0, n);
@@ -55,6 +65,8 @@ export default {
       gameNumber: 1,
       types: getNDuplicatedElements(8),
       guessedCount: 0,
+      stopwatch: useStopwatch(true),
+      clickCount: 0,
     };
   },
   computed: {
@@ -66,11 +78,16 @@ export default {
     },
   },
   methods: {
+    handleTileClicked() {
+      this.clickCount++;
+    },
     handleTileGuessed() {
       this.guessedCount += 2;
       if (this.guessedCount === this.size * this.size) {
-        alert(`You won!`);
-        this.handleDifficultyClick(this.size);
+        setTimeout(() => {
+          alert(`You won!`);
+          this.handleDifficultyClick(this.size);
+        }, 100);
       }
     },
     handleDifficultyClick(size) {
@@ -78,6 +95,8 @@ export default {
       this.size = size;
       this.types = getNDuplicatedElements((size * size) / 2);
       this.gameNumber++;
+      this.stopwatch.reset();
+      this.clickCount = 0;
     },
   },
 };

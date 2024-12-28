@@ -74,6 +74,11 @@ export default {
         return;
       }
 
+      this.$emit("tile-clicked", {
+        row: this.row,
+        col: this.col,
+      });
+
       if (!lastFlippedType.value) {
         this.flipped = true;
         setLastFlippedTile(this);
@@ -90,8 +95,6 @@ export default {
         this.$emit("tile-guessed", {
           row: this.row,
           col: this.col,
-          flipped: this.flipped,
-          guessed: this.guessed,
         });
 
         return;
@@ -103,13 +106,6 @@ export default {
       lastFlippedType.value.flipped = false;
       lastFlippedType.value.drawTile();
       setLastFlippedTile(null);
-
-      this.$emit("tile-clicked", {
-        row: this.row,
-        col: this.col,
-        flipped: this.flipped,
-        guessed: this.guessed,
-      });
     },
   },
 };
