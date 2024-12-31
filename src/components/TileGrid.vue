@@ -48,7 +48,6 @@
           @tile-guessed="handleTileGuessed"
           @tile-clicked="handleTileClicked"
           @block-click="handleBlockClick"
-          @unblock-click="handleUnblockClick"
         />
       </div>
       <div>Clicks: {{ this.clickCount }}</div>
@@ -85,8 +84,8 @@ export default {
       stopwatch: useStopwatch(true),
       clickCount: 0,
       block: false,
-      startAudio: new Audio("public/audio/start.mp3"),
-      winAudio: new Audio("public/audio/win.mp3"),
+      startAudio: new Audio("/audio/start.mp3"),
+      winAudio: new Audio("/audio/win.mp3"),
       history: [],
     };
   },
@@ -102,9 +101,6 @@ export default {
     },
   },
   methods: {
-    getHistory() {
-      return localStorage.getItem("history");
-    },
     handleTileClicked() {
       this.clickCount++;
     },
@@ -127,9 +123,10 @@ export default {
     },
     handleBlockClick() {
       this.block = true;
-    },
-    handleUnblockClick() {
-      this.block = false;
+
+      setTimeout(() => {
+        this.block = false;
+      }, 1000);
     },
     handleDifficultyClick(size) {
       this.startAudio.play();
@@ -154,7 +151,7 @@ export default {
   justify-content: center;
   height: calc(100vh - 50px);
   background-image: linear-gradient(white, #697272);
-  padding-top: 50px;
+  padding: 50px 10px 0 10px;
 }
 
 .controls {
@@ -180,27 +177,27 @@ label {
 }
 
 .difficulty-button {
-  background-color: #2a2d2d; /* Green background */
-  color: white; /* White text */
-  border: none; /* No border */
-  border-radius: 12px; /* Rounded corners */
-  padding: 10px 20px; /* Padding for size */
-  margin: 0 5px; /* Spacing between buttons */
-  font-size: 16px; /* Adjust text size */
-  cursor: pointer; /* Pointer cursor on hover */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow */
-  transition: all 0.3s ease; /* Smooth transition */
-  font-family: "Audiowide";
+  background-color: #2a2d2d;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  margin: 0 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  font-family: "Audiowide", sans-serif;
 }
 
 .difficulty-button:hover {
-  background-color: #424640; /* Darker green on hover */
-  transform: translateY(-2px); /* Slight lift on hover */
+  background-color: #424640;
+  transform: translateY(-2px);
 }
 
 .difficulty-button:active {
-  background-color: #5a6c5b; /* Even darker green on click */
-  transform: translateY(0); /* Reset lift */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Adjust shadow */
+  background-color: #5a6c5b;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 </style>

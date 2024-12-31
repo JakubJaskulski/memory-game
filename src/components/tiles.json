@@ -1,74 +1,74 @@
 {
   "1": {
-    "path": "public/img/1.jpg",
+    "path": "/img/1.jpg",
     "background": "orange"
   },
   "2": {
-    "path": "public/img/2.jpg",
+    "path": "/img/2.jpg",
     "background": "red"
   },
   "3": {
-    "path": "public/img/3.jpg",
+    "path": "/img/3.jpg",
     "background": "purple"
   },
   "4": {
-    "path": "public/img/4.jpg",
+    "path": "/img/4.jpg",
     "background": "navy"
   },
   "5": {
-    "path": "public/img/5.jpg",
+    "path": "/img/5.jpg",
     "background": "blue"
   },
   "6": {
-    "path": "public/img/6.jpg",
+    "path": "/img/6.jpg",
     "background": "teal"
   },
   "7": {
-    "path": "public/img/7.jpg",
+    "path": "/img/7.jpg",
     "background": "white"
   },
   "8": {
-    "path": "public/img/8.jpg",
+    "path": "/img/8.jpg",
     "background": "red"
   },
   "9": {
-    "path": "public/img/9.jpg",
+    "path": "/img/9.jpg",
     "background": "red"
   },
   "10": {
-    "path": "public/img/10.jpg",
+    "path": "/img/10.jpg",
     "background": "purple"
   },
   "11": {
-    "path": "public/img/11.jpg",
+    "path": "/img/11.jpg",
     "background": "purple"
   },
   "12": {
-    "path": "public/img/12.jpg",
+    "path": "/img/12.jpg",
     "background": "navy"
   },
   "13": {
-    "path": "public/img/13.jpg",
+    "path": "/img/13.jpg",
     "background": "navy"
   },
   "14": {
-    "path": "public/img/14.jpg",
+    "path": "/img/14.jpg",
     "background": "blue"
   },
   "15": {
-    "path": "public/img/15.jpg",
+    "path": "/img/15.jpg",
     "background": "blue"
   },
   "16": {
-    "path": "public/img/16.jpg",
+    "path": "/img/16.jpg",
     "background": "teal"
   },
   "17": {
-    "path": "public/img/17.jpg",
+    "path": "/img/17.jpg",
     "background": "teal"
   },
   "18": {
-    "path": "public/img/18.jpg",
+    "path": "/img/18.jpg",
     "background": "white"
   }
 }

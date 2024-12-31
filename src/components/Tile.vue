@@ -15,7 +15,7 @@ import { ref } from "vue";
 import tilesData from "./tiles.json";
 
 const lastFlippedType = ref(0);
-function setLastFlippedTile(tile) {
+export function setLastFlippedTile(tile) {
   lastFlippedType.value = tile;
 }
 
@@ -27,8 +27,8 @@ export default {
       parallaxOffsetX: 0,
       parallaxOffsetY: 0,
       img: null,
-      clickAudio: new Audio("public/audio/shot.mp3"),
-      guessAudio: new Audio("public/audio/headshot.mp3"),
+      clickAudio: new Audio("/audio/shot.mp3"),
+      guessAudio: new Audio("/audio/headshot.mp3"),
     };
   },
   props: {
@@ -52,6 +52,7 @@ export default {
   mounted() {
     this.loadImage();
     this.drawTile();
+    setLastFlippedTile(null);
   },
   methods: {
     loadImage() {
@@ -110,22 +111,16 @@ export default {
         return;
       }
 
-      this.$emit("tile-clicked", {
-        row: this.row,
-        col: this.col,
-      });
+      this.$emit("tile-clicked");
 
       this.clickAudio.play();
-
-      if (!lastFlippedType.value) {
-        this.flipped = true;
-        setLastFlippedTile(this);
-        this.drawTile();
-        return;
-      }
-
       this.flipped = true;
       this.drawTile();
+
+      if (!lastFlippedType.value) {
+        setLastFlippedTile(this);
+        return;
+      }
 
       if (lastFlippedType.value.type === this.type) {
         this.guessed = true;
@@ -133,11 +128,7 @@ export default {
 
         this.guessAudio.play();
 
-        this.$emit("tile-guessed", {
-          row: this.row,
-          col: this.col,
-        });
-
+        this.$emit("tile-guessed");
         return;
       }
 
@@ -150,8 +141,6 @@ export default {
         lastFlippedType.value.flipped = false;
         lastFlippedType.value.drawTile();
         setLastFlippedTile(null);
-
-        this.$emit("unblock-click");
       }, 1000);
     },
     handleMouseMove(event) {
