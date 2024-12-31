@@ -4,6 +4,8 @@
     :height="tileSize"
     class="tile-canvas"
     ref="tileCanvas"
+    @mousemove="handleMouseMove"
+    @mouseleave="resetParallax"
     @click="handleClick"
   ></canvas>
 </template>
@@ -22,6 +24,10 @@ export default {
     return {
       flipped: false,
       guessed: false,
+      parallaxOffsetX: 0,
+      parallaxOffsetY: 0,
+      clickAudio: new Audio("public/audio/shot.mp3"),
+      guessAudio: new Audio("public/audio/headshot.mp3"),
     };
   },
   props: {
@@ -51,26 +57,31 @@ export default {
       const canvas = this.$refs.tileCanvas;
       const ctx = canvas.getContext("2d");
 
+      // Clear the canvas
+      ctx.clearRect(0, 0, this.tileSize, this.tileSize);
+
+      // Calculate parallax offsets
+      const offsetX = this.parallaxOffsetX * 0.1; // Adjust parallax strength
+      const offsetY = this.parallaxOffsetY * 0.1;
+
       // Draw tile background
       if (this.flipped) {
         const gradient = ctx.createLinearGradient(
-          0,
-          0,
-          this.tileSize,
-          this.tileSize
+          offsetX,
+          offsetY,
+          this.tileSize + offsetX,
+          this.tileSize + offsetY
         );
-        gradient.addColorStop(0, tileData.background); // Start color
-        gradient.addColorStop(1, "black"); // End color
+        gradient.addColorStop(0, tileData.background);
+        gradient.addColorStop(1, "black");
 
-        // Apply the gradient as the fill style and fill the canvas
         ctx.fillStyle = gradient;
-
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
 
         const img = new Image();
         img.onload = () => {
-          // Draw the image onto the canvas
-          ctx.drawImage(img, 5, 5, 90, 90);
+          // Draw the image with a parallax effect
+          ctx.drawImage(img, 5 + offsetX, 5 + offsetY, 90, 90);
         };
         img.src = tileData.path;
       } else {
@@ -99,6 +110,8 @@ export default {
         col: this.col,
       });
 
+      this.clickAudio.play();
+
       if (!lastFlippedType.value) {
         this.flipped = true;
         setLastFlippedTile(this);
@@ -112,6 +125,8 @@ export default {
       if (lastFlippedType.value.type === this.type) {
         this.guessed = true;
         setLastFlippedTile(null);
+
+        this.guessAudio.play();
 
         this.$emit("tile-guessed", {
           row: this.row,
@@ -133,6 +148,21 @@ export default {
 
         this.$emit("unblock-click");
       }, 1000);
+    },
+    handleMouseMove(event) {
+      const rect = this.$refs.tileCanvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      this.parallaxOffsetX = mouseX - this.tileSize / 2;
+      this.parallaxOffsetY = mouseY - this.tileSize / 2;
+
+      this.drawTile();
+    },
+    resetParallax() {
+      this.parallaxOffsetX = 0;
+      this.parallaxOffsetY = 0;
+      this.drawTile();
     },
   },
 };

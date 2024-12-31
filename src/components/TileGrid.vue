@@ -73,6 +73,8 @@ export default {
       stopwatch: useStopwatch(true),
       clickCount: 0,
       block: false,
+      startAudio: new Audio("public/audio/start.mp3"),
+      winAudio: new Audio("public/audio/win.mp3"),
     };
   },
   computed: {
@@ -91,6 +93,7 @@ export default {
       this.guessedCount += 2;
       if (this.guessedCount === this.size * this.size) {
         setTimeout(() => {
+          this.winAudio.play();
           alert(`You won!`);
           this.handleDifficultyClick(this.size);
         }, 100);
@@ -103,6 +106,8 @@ export default {
       this.block = false;
     },
     handleDifficultyClick(size) {
+      this.startAudio.play();
+
       this.guessedCount = 0;
       this.size = size;
       this.types = getNDuplicatedElements((size * size) / 2);
