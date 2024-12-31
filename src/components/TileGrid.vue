@@ -58,19 +58,8 @@
 <script>
 import { useStopwatch } from "vue-timer-hook";
 
-const tileTypes = Array.from({ length: 18 }, (_, index) => index + 1);
-const getNDuplicatedElements = (n) => {
-  const types = tileTypes.slice(0, n);
-
-  const duplicatedTypes = types.reduce(
-    (acc, element) => acc.concat([element, element]),
-    []
-  );
-
-  return duplicatedTypes.sort(() => 0.5 - Math.random());
-};
-
 import Tile from "./Tile.vue";
+import { getNDuplicatedElements } from "@/utils/tilesHelpers.js";
 
 export default {
   components: { Tile },
