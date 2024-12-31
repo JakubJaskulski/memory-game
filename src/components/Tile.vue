@@ -26,6 +26,7 @@ export default {
       guessed: false,
       parallaxOffsetX: 0,
       parallaxOffsetY: 0,
+      img: null,
       clickAudio: new Audio("public/audio/shot.mp3"),
       guessAudio: new Audio("public/audio/headshot.mp3"),
     };
@@ -49,22 +50,28 @@ export default {
     },
   },
   mounted() {
+    this.loadImage();
     this.drawTile();
   },
   methods: {
+    loadImage() {
+      const tileData = tilesData[this.type];
+      this.img = new Image();
+      this.img.src = tileData.path;
+      this.img.onload = () => {
+        this.drawTile();
+      };
+    },
     drawTile() {
       const tileData = tilesData[this.type];
       const canvas = this.$refs.tileCanvas;
       const ctx = canvas.getContext("2d");
 
-      // Clear the canvas
       ctx.clearRect(0, 0, this.tileSize, this.tileSize);
 
-      // Calculate parallax offsets
-      const offsetX = this.parallaxOffsetX * 0.1; // Adjust parallax strength
+      const offsetX = this.parallaxOffsetX * 0.1;
       const offsetY = this.parallaxOffsetY * 0.1;
 
-      // Draw tile background
       if (this.flipped) {
         const gradient = ctx.createLinearGradient(
           offsetX,
@@ -78,27 +85,16 @@ export default {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
 
-        const img = new Image();
-        img.onload = () => {
-          // Draw the image with a parallax effect
-          ctx.drawImage(img, 5 + offsetX, 5 + offsetY, 90, 90);
-        };
-        img.src = tileData.path;
+        if (this.img) {
+          ctx.drawImage(this.img, 5 + offsetX, 5 + offsetY, 90, 90);
+        }
       } else {
         ctx.fillStyle = "#2196f3";
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
       }
 
-      // Draw tile border
       ctx.strokeStyle = "#000";
       ctx.strokeRect(0, 0, this.tileSize, this.tileSize);
-
-      // Draw tile text
-      ctx.fillStyle = "#0f1010";
-      ctx.font = "16px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`${this.type}`, this.tileSize / 2, this.tileSize / 2);
     },
     handleClick() {
       if (this.flipped || this.guessed) {
