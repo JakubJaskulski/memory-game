@@ -3,9 +3,24 @@
     <div>
       <div class="controls">
         <label>Difficulty</label>
-        <button @click="() => handleDifficultyClick(2)">Easy</button>
-        <button @click="() => handleDifficultyClick(4)">Medium</button>
-        <button @click="() => handleDifficultyClick(6)">Hard</button>
+        <button
+          class="difficulty-button"
+          @click="() => handleDifficultyClick(2)"
+        >
+          Easy
+        </button>
+        <button
+          class="difficulty-button"
+          @click="() => handleDifficultyClick(4)"
+        >
+          Medium
+        </button>
+        <button
+          class="difficulty-button"
+          @click="() => handleDifficultyClick(6)"
+        >
+          Hard
+        </button>
       </div>
 
       <div>
@@ -37,10 +52,6 @@
         />
       </div>
       <div>Clicks: {{ this.clickCount }}</div>
-      <div>---debug---</div>
-      <div>Game number: {{ this.gameNumber }}</div>
-      <div>Game size: {{ this.size }}</div>
-      <div>History: {{ getHistory() }}</div>
     </div>
   </div>
 </template>
@@ -84,7 +95,7 @@ export default {
   },
   computed: {
     gridWidth() {
-      return this.size * this.tileSize;
+      return this.size * (this.tileSize + 10);
     },
     tileArray() {
       return Array.from({ length: this.size * this.size });
@@ -129,18 +140,21 @@ export default {
       this.gameNumber++;
       this.stopwatch.reset();
       this.clickCount = 0;
+      this.block = false;
     },
   },
 };
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
+
 .grid-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #f5f5f5;
+  height: calc(100vh - 50px);
+  background-image: linear-gradient(white, #697272);
+  padding-top: 50px;
 }
 
 .controls {
@@ -156,5 +170,37 @@ label {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.controls {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.difficulty-button {
+  background-color: #2a2d2d; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 12px; /* Rounded corners */
+  padding: 10px 20px; /* Padding for size */
+  margin: 0 5px; /* Spacing between buttons */
+  font-size: 16px; /* Adjust text size */
+  cursor: pointer; /* Pointer cursor on hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow */
+  transition: all 0.3s ease; /* Smooth transition */
+  font-family: "Audiowide";
+}
+
+.difficulty-button:hover {
+  background-color: #424640; /* Darker green on hover */
+  transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.difficulty-button:active {
+  background-color: #5a6c5b; /* Even darker green on click */
+  transform: translateY(0); /* Reset lift */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Adjust shadow */
 }
 </style>

@@ -89,7 +89,16 @@ export default {
           ctx.drawImage(this.img, 5 + offsetX, 5 + offsetY, 90, 90);
         }
       } else {
-        ctx.fillStyle = "#2196f3";
+        const gradient = ctx.createLinearGradient(
+          offsetX,
+          offsetY,
+          this.tileSize + offsetX,
+          this.tileSize + offsetY
+        );
+        gradient.addColorStop(0, "grey");
+        gradient.addColorStop(1, "black");
+
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
       }
 

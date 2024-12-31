@@ -18,9 +18,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  min-width: 500px;
+  background-color: #252528;
   color: #181818;
 }
 </style>
