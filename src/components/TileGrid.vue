@@ -18,7 +18,10 @@
       <div
         class="canvas-grid"
         :key="gameNumber"
-        :style="{ width: gridWidth + 'px' }"
+        :style="{
+          width: gridWidth + 'px',
+          pointerEvents: this.block ? 'none' : 'auto',
+        }"
       >
         <Tile
           v-for="(tile, index) in tileArray"
@@ -29,6 +32,8 @@
           :type="String(this.types[index])"
           @tile-guessed="handleTileGuessed"
           @tile-clicked="handleTileClicked"
+          @block-click="handleBlockClick"
+          @unblock-click="handleUnblockClick"
         />
       </div>
       <div>Clicks: {{ this.clickCount }}</div>
@@ -61,12 +66,13 @@ export default {
   data() {
     return {
       size: 4,
-      tileSize: 60,
+      tileSize: 100,
       gameNumber: 1,
       types: getNDuplicatedElements(8),
       guessedCount: 0,
       stopwatch: useStopwatch(true),
       clickCount: 0,
+      block: false,
     };
   },
   computed: {
@@ -89,6 +95,12 @@ export default {
           this.handleDifficultyClick(this.size);
         }, 100);
       }
+    },
+    handleBlockClick() {
+      this.block = true;
+    },
+    handleUnblockClick() {
+      this.block = false;
     },
     handleDifficultyClick(size) {
       this.guessedCount = 0;

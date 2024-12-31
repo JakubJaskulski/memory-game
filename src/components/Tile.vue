@@ -53,6 +53,13 @@ export default {
       if (this.flipped) {
         ctx.fillStyle = "#3df321";
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
+
+        const img = new Image();
+        img.onload = () => {
+          // Draw the image onto the canvas
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = `public/img/${this.type}.jpg`;
       } else {
         ctx.fillStyle = "#2196f3";
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
@@ -86,10 +93,11 @@ export default {
         return;
       }
 
+      this.flipped = true;
+      this.drawTile();
+
       if (lastFlippedType.value.type === this.type) {
-        this.flipped = true;
         this.guessed = true;
-        this.drawTile();
         setLastFlippedTile(null);
 
         this.$emit("tile-guessed", {
@@ -100,12 +108,18 @@ export default {
         return;
       }
 
-      this.flipped = false;
-      this.drawTile();
+      this.$emit("block-click");
 
-      lastFlippedType.value.flipped = false;
-      lastFlippedType.value.drawTile();
-      setLastFlippedTile(null);
+      setTimeout(() => {
+        this.flipped = false;
+        this.drawTile();
+
+        lastFlippedType.value.flipped = false;
+        lastFlippedType.value.drawTile();
+        setLastFlippedTile(null);
+
+        this.$emit("unblock-click");
+      }, 1000);
     },
   },
 };
