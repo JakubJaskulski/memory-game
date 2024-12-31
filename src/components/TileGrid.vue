@@ -40,6 +40,7 @@
       <div>---debug---</div>
       <div>Game number: {{ this.gameNumber }}</div>
       <div>Game size: {{ this.size }}</div>
+      <div>History: {{ getHistory() }}</div>
     </div>
   </div>
 </template>
@@ -75,7 +76,11 @@ export default {
       block: false,
       startAudio: new Audio("public/audio/start.mp3"),
       winAudio: new Audio("public/audio/win.mp3"),
+      history: [],
     };
+  },
+  created() {
+    this.history = JSON.parse(localStorage.getItem("history") || "[]");
   },
   computed: {
     gridWidth() {
@@ -86,13 +91,23 @@ export default {
     },
   },
   methods: {
+    getHistory() {
+      return localStorage.getItem("history");
+    },
     handleTileClicked() {
       this.clickCount++;
     },
     handleTileGuessed() {
       this.guessedCount += 2;
       if (this.guessedCount === this.size * this.size) {
+        //handle win
         setTimeout(() => {
+          this.history.push({
+            duration: `${this.stopwatch.days}:${this.stopwatch.hours}:${this.stopwatch.minutes}:${this.stopwatch.seconds}`,
+            clickCount: this.clickCount,
+          });
+          localStorage.setItem("history", JSON.stringify(this.history));
+
           this.winAudio.play();
           alert(`You won!`);
           this.handleDifficultyClick(this.size);
