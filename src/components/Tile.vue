@@ -14,157 +14,151 @@
 import { ref } from "vue";
 import tilesData from "./tiles.json";
 
-const lastFlippedType = ref(0);
+const lastFlippedTile = ref(null);
+
 export function setLastFlippedTile(tile) {
-  lastFlippedType.value = tile;
+  lastFlippedTile.value = tile;
 }
 
 export default {
+  props: {
+    row: { type: Number, required: true },
+    col: { type: Number, required: true },
+    tileSize: { type: Number, default: 100 },
+    type: { type: String, required: true },
+  },
   data() {
     return {
       flipped: false,
       guessed: false,
-      parallaxOffsetX: 0,
-      parallaxOffsetY: 0,
+      parallaxOffset: { x: 0, y: 0 },
       img: null,
       clickAudio: new Audio("/audio/shot.mp3"),
       guessAudio: new Audio("/audio/headshot.mp3"),
     };
   },
-  props: {
-    row: {
-      type: Number,
-      required: true,
-    },
-    col: {
-      type: Number,
-      required: true,
-    },
-    tileSize: {
-      type: Number,
-      default: 100,
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-  },
   mounted() {
     this.loadImage();
     this.drawTile();
-    setLastFlippedTile(null);
   },
   methods: {
     loadImage() {
       const tileData = tilesData[this.type];
       this.img = new Image();
       this.img.src = tileData.path;
-      this.img.onload = () => {
-        this.drawTile();
-      };
+      this.img.onload = this.drawTile;
     },
     drawTile() {
-      const tileData = tilesData[this.type];
       const canvas = this.$refs.tileCanvas;
       const ctx = canvas.getContext("2d");
-
       ctx.clearRect(0, 0, this.tileSize, this.tileSize);
 
-      const offsetX = this.parallaxOffsetX * 0.1;
-      const offsetY = this.parallaxOffsetY * 0.1;
+      const offset = {
+        x: this.parallaxOffset.x * 0.1,
+        y: this.parallaxOffset.y * 0.1,
+      };
 
-      if (this.flipped) {
-        const gradient = ctx.createLinearGradient(
-          offsetX,
-          offsetY,
-          this.tileSize + offsetX,
-          this.tileSize + offsetY
-        );
-        gradient.addColorStop(0, tileData.background);
-        gradient.addColorStop(1, "black");
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.tileSize, this.tileSize);
-
-        if (this.img) {
-          ctx.drawImage(this.img, 5 + offsetX, 5 + offsetY, 90, 90);
-        }
-      } else {
-        const gradient = ctx.createLinearGradient(
-          offsetX,
-          offsetY,
-          this.tileSize + offsetX,
-          this.tileSize + offsetY
-        );
-        gradient.addColorStop(0, "grey");
-        gradient.addColorStop(1, "black");
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.tileSize, this.tileSize);
+      this.drawBackground(ctx, offset);
+      if (this.flipped && this.img) {
+        this.drawImage(ctx, offset);
       }
 
+      this.drawBorder(ctx);
+    },
+    drawBackground(ctx, offset) {
+      const tileData = tilesData[this.type];
+      const gradient = ctx.createLinearGradient(
+        offset.x,
+        offset.y,
+        this.tileSize + offset.x,
+        this.tileSize + offset.y
+      );
+
+      if (this.flipped) {
+        gradient.addColorStop(0, tileData.background);
+        gradient.addColorStop(1, "black");
+      } else {
+        gradient.addColorStop(0, "grey");
+        gradient.addColorStop(1, "black");
+      }
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, this.tileSize, this.tileSize);
+    },
+    drawImage(ctx, offset) {
+      ctx.drawImage(
+        this.img,
+        5 + offset.x,
+        5 + offset.y,
+        this.tileSize - 10,
+        this.tileSize - 10
+      );
+    },
+    drawBorder(ctx) {
       ctx.strokeStyle = "#000";
       ctx.strokeRect(0, 0, this.tileSize, this.tileSize);
     },
     handleClick() {
-      if (this.flipped || this.guessed) {
-        return;
-      }
+      if (this.flipped || this.guessed) return;
 
-      this.$emit("tile-clicked");
-
-      this.clickAudio.play();
       this.flipped = true;
+      this.clickAudio.play();
       this.drawTile();
 
-      if (!lastFlippedType.value) {
+      if (!lastFlippedTile.value) {
         setLastFlippedTile(this);
         return;
       }
 
-      if (lastFlippedType.value.type === this.type) {
-        this.guessed = true;
-        setLastFlippedTile(null);
-
-        this.guessAudio.play();
-
-        this.$emit("tile-guessed");
-        return;
+      if (lastFlippedTile.value.type === this.type) {
+        this.handleMatch();
+      } else {
+        this.handleMismatch();
       }
+    },
+    handleMatch() {
+      this.guessed = true;
+      lastFlippedTile.value.guessed = true;
+      setLastFlippedTile(null);
 
+      this.guessAudio.play();
+      this.$emit("tile-guessed");
+    },
+    handleMismatch() {
       this.$emit("block-click");
 
       setTimeout(() => {
-        this.flipped = false;
-        this.drawTile();
-
-        lastFlippedType.value.flipped = false;
-        lastFlippedType.value.drawTile();
+        this.resetTileState();
+        lastFlippedTile.value.resetTileState();
         setLastFlippedTile(null);
       }, 1000);
     },
+    resetTileState() {
+      this.flipped = false;
+      this.drawTile();
+    },
     handleMouseMove(event) {
       const rect = this.$refs.tileCanvas.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left;
-      const mouseY = event.clientY - rect.top;
-
-      this.parallaxOffsetX = mouseX - this.tileSize / 2;
-      this.parallaxOffsetY = mouseY - this.tileSize / 2;
-
+      this.parallaxOffset.x = event.clientX - rect.left - this.tileSize / 2;
+      this.parallaxOffset.y = event.clientY - rect.top - this.tileSize / 2;
       this.drawTile();
     },
     resetParallax() {
-      this.parallaxOffsetX = 0;
-      this.parallaxOffsetY = 0;
+      this.parallaxOffset = { x: 0, y: 0 };
       this.drawTile();
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .tile-canvas {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tile-canvas:hover {
+  transform: scale(1.05);
 }
 </style>
