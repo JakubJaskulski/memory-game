@@ -10,6 +10,7 @@
 
 <script>
 import { ref } from "vue";
+import tilesData from "./tiles.json";
 
 const lastFlippedType = ref(0);
 function setLastFlippedTile(tile) {
@@ -34,7 +35,7 @@ export default {
     },
     tileSize: {
       type: Number,
-      default: 60,
+      default: 100,
     },
     type: {
       type: String,
@@ -46,20 +47,32 @@ export default {
   },
   methods: {
     drawTile() {
+      const tileData = tilesData[this.type];
       const canvas = this.$refs.tileCanvas;
       const ctx = canvas.getContext("2d");
 
       // Draw tile background
       if (this.flipped) {
-        ctx.fillStyle = "#3df321";
+        const gradient = ctx.createLinearGradient(
+          0,
+          0,
+          this.tileSize,
+          this.tileSize
+        );
+        gradient.addColorStop(0, tileData.background); // Start color
+        gradient.addColorStop(1, "black"); // End color
+
+        // Apply the gradient as the fill style and fill the canvas
+        ctx.fillStyle = gradient;
+
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
 
         const img = new Image();
         img.onload = () => {
           // Draw the image onto the canvas
-          ctx.drawImage(img, 0, 0);
+          ctx.drawImage(img, 5, 5, 90, 90);
         };
-        img.src = `public/img/${this.type}.jpg`;
+        img.src = tileData.path;
       } else {
         ctx.fillStyle = "#2196f3";
         ctx.fillRect(0, 0, this.tileSize, this.tileSize);
